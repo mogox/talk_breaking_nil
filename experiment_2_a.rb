@@ -2,19 +2,28 @@ require "pry"
 
 module NilTracker
   def method_missing(method, *args, &block)
-    error_message = "=====> Trying to call `#{method}` from nil instance"
+    error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
+
     puts error_message
+    puts caller.take(5).join("\n")
     puts "=====> args: #{args}" if args&.size > 0
     puts "=====> block: #{block.source}" if block
 
-    caller.each { |instruction|  puts instruction unless instruction.match("pry") }
-
-    if @@stop_execution
+    if @stop_execution
       raise NoMethodError.new(error_message)
     else
       puts "=====> NoMethodError not raised"
       puts "================================\n\n"
     end
+  end
+
+  def respond_to_missing?(method_name, include_private = false)
+    p "=====> Calling respond_to_missing? method: `#{method_name}` in a nil instance"
+    false
+  end
+
+  def self.stop_execution(stop)
+    @stop_execution = stop
   end
 
   def to_ary
@@ -27,15 +36,6 @@ module NilTracker
 
   def to_hash
     {}
-  end
-
-  def respond_to_missing?(method_name, include_private = false)
-    p "=====> Calling respond_to_missing? method: `#{method_name}` in a nil instance"
-    false
-  end
-
-  def self.stop_execution(stop)
-    @@stop_execution = stop
   end
 end
 

@@ -1,18 +1,22 @@
 require "pry"
 
 class NilClass
-  # attr_accessor :stop_execution
+  attr_accessor :stop_execution
 
   def method_missing(method, *args, &block)
     error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
+
     puts error_message
+    puts caller.take(5).join("\n")
     puts "=====> args: #{args}" if args&.size > 0
     puts "=====> block: #{block.source}" if block
 
-    caller.each { |instruction|  puts "> #{instruction}" unless instruction.match("pry") }
-
-    puts "=====> NoMethodError not raised"
+    puts "=====> NoMethodError was not raised"
     puts "================================\n\n"
+  end
+
+  def respond_to_missing?(method_name, include_private = false)
+    false
   end
 
   def to_ary
@@ -25,10 +29,6 @@ class NilClass
 
   def to_hash
     {}
-  end
-
-  def respond_to_missing?(method_name, include_private = false)
-    false
   end
 end
 
