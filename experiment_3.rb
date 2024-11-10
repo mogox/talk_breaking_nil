@@ -8,6 +8,7 @@ module NilTracker
     error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
 
     puts error_message
+    puts "=====> Caller: (stacktrace)"
     puts caller.take(5).join("\n")
     puts "=====> args: #{args}" if args&.size > 0
     puts "=====> block: #{block.source}" if block
@@ -15,6 +16,7 @@ module NilTracker
     wolvernil.log(method, caller.take(5).join("\n"), args, block)
 
     if @@stop_execution
+      puts "Raising NoMethodError <====="
       raise NoMethodError.new(error_message)
     else
       puts "=====> NoMethodError not raised for method #{method}"
@@ -80,7 +82,7 @@ class Wolvernil
   end
 
   def create_method(method, *args, &block)
-    NilClass.define_method(method) do |*args, &block|
+    NilTracker.define_method(method) do |*args, &block|
       p "---> Calling a method #{method} in the nil class, this has been recorded"
     end
   end
@@ -88,11 +90,11 @@ end
 
 class RubyConf
   def break_nil
-    NilTracker.stop_ex(true)
+    NilTracker.stop_execution(true)
     nil.extend(NilTracker)
 
     data = nil
-    data.help1  rescue "Opps exception raised, don't wake up the team log"
+    data.help1  rescue "Oops exception raised, don't wake up the team log"
 
     #  data.help2("help is on the way", value: true)
 

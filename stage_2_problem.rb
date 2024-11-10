@@ -1,18 +1,35 @@
-def publish_message(organization_id, user_id, message_body)
-     learning_message = Trailhead::C2c::LearningMessage.new(
-       message_body.fetch(:award_uid),
-       Time.zone.parse(message_body.fetch(:earned_at)).to_datetime
-     )
-    c2c_client.notify_learning_event(
-organization_id, 
-user_id, 
-learning_message
-    )
+class MessagePublisher
+  def login(organization_id, user_id, user_profile)
+    profile = user_profile.login_data
+    client.user_info(organization_id, user_id, profile)
   end
 
+  def client
+    @client ||= HttpHelper.new
+  end
+end
 
-class C2C::HttpHelper
-  def permission_request(url, jwt)
+class Client::HttpHelper
+  def user_info(organization_id, user_id, profile)
+    params = { organization_id:, user_id:, profile: }
+    request_auth(LOGIN_URL, timeout, )
+  end
+
+  private
+
+  def timeout
+    if development?
+      DEFAULT_TIMEOUT
+    else
+      ENV['TIMEOUT_SECONDS'].to_s
+    end
+  end
+
+  def development?
+    @host != PRODUCTION && @host != STAGING
+  end
+
+  def request_auth(url, timeout, params)
     p "=============== URL *** #{url}"
     p "=============== TIMEOUT *** #{timeout}"
     uri = URI.parse(url)
@@ -120,6 +137,9 @@ ENV['TIMEOUT_SECONDS']
 
 ENV['TIMEOUT_SECONDS'].to_s
 => ""
+
+"".zero?
+
 
 > sleep "10"
 TypeError: can’t convert String into time interval

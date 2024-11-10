@@ -39,7 +39,7 @@ module NilTracker
   end
 end
 
-NilTracker.stop_execution(false)
+NilTracker.stop_execution(true)
 nil.extend(NilTracker)
 
 data = nil
