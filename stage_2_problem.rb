@@ -30,82 +30,67 @@ class Client::HttpHelper
   end
 
   def request_auth(url, timeout, params)
-    p "=============== URL *** #{url}"
-    p "=============== TIMEOUT *** #{timeout}"
     uri = URI.parse(url)
     Net::HTTP.start(uri.hostname, uri.port, read_timeout: timeout, use_ssl: true) do |http|
-      p "=========  GETTING READY FOR REQUEST"
       request = Net::HTTP::Post.new(uri.request_uri)
-      p "=========== REQUEST BUILD #{request}"
-      request['authorization'] = "C2C #{jwt}"
-      p "=========== set C2C header"
+      request['authorization'] = "#{jwt}"
       http.request(request) # HERE IS THE ISSUE
     end
-    rescue StandardError => re
-      re.backtrace.join("\n")
-      p re.class
-      raise re
+  rescue StandardError => re
+    re.backtrace.join("\n")
+    p re.class
+    raise re
   end
 end
 
 module Net
   class HTTP < Protocol
     def request(req, body = nil, &block)  # :yield: +response+
-      p "HTTP REQUEST"
-      p "======== Before started"
       unless started?
         start {
           req['connection'] ||= 'close'
           return request(req, body, &block)
         }
       end
-      p "================= after started? block"
       if proxy_user()
         req.proxy_basic_auth proxy_user(), proxy_pass() unless use_ssl?
       end
-      p "========= proxy block"
       req.set_body_internal body
       res = transport_request(req, &block)
-      p "=========  After transport_request"
       if sspi_auth?(res)
         sspi_auth(req)
         res = transport_request(req, &block)
       end
-      p "========= after sppi auth?"
       res
     end
-  end
-end
 
-
-def transport_request(req)
-   begin
-     begin_transport req
-     res = catch(:response) {
+    def transport_request(req)
+       begin
+         begin_transport req
+         res = catch(:response) {
+           ...
+             res = HTTPResponse.read_new(@socket)
+           ... }
+       rescue Net::OpenTimeout
+         raise
+       rescue Net::ReadTimeout, IOError, EOFError,
+        ....
+       end
        ...
-         res = HTTPResponse.read_new(@socket)
-       ... }
-   rescue Net::OpenTimeout
-     raise
-   rescue Net::ReadTimeout, IOError, EOFError,
-    ....
-   end
-   ...
- rescue => exception
-   D "Conn close because of error #{exception}"
-   @socket.close if @socket
-   raise exception
- end
-end
+     rescue => exception
+       D "Conn close because of error #{exception}"
+       @socket.close if @socket
+       raise exception
+     end
+    end
 
+    def begin_transport(req)
+         if @socket.closed?
+           connect
+         ...
+    end
 
- def begin_transport(req)
-      if @socket.closed?
-        connect
-      ...
-  end
-
- def connect
+    def connect
       D "opening connection to #{conn_addr}:#{conn_port}..."
       s = Timeout.timeout(@open_timeout,  Net::OpenTimeout) {
              begin
@@ -114,10 +99,14 @@ end
           raise e, "Failed to open TCP connection to " +
             "#{conn_addr}:#{conn_port} (#{e.message})"
         end
+    end
+
+
+  end
 end
 
-
- def timeout(sec, klass = nil, message = nil)
+class Timeout
+  def timeout(sec, klass = nil, message = nil)
     return yield(sec) if sec == nil or sec.zero?
       ...
       begin
@@ -130,7 +119,13 @@ end
             x.raise e
           end
     end
+  end
 end
+
+
+
+
+
 
 ENV['TIMEOUT_SECONDS']
 => nil

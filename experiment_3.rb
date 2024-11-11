@@ -1,22 +1,15 @@
 require "pry-nav"
 require "singleton"
+require "awesome_print"
 
-module NilTracker
+module Wolvernil
   def method_missing(method, *args, &block)
     return if method == :call
 
-    error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
+    nil_tracker.log(method, caller.take(5).join("\n"), args, block)
 
-    puts error_message
-    puts "=====> Caller: (stacktrace)"
-    puts caller.take(5).join("\n")
-    puts "=====> args: #{args}" if args&.size > 0
-    puts "=====> block: #{block.source}" if block
-
-    wolvernil.log(method, caller.take(5).join("\n"), args, block)
-
-    if @@stop_execution
-      puts "Raising NoMethodError <====="
+    if stop_execution?
+      puts "====> Raising NoMethodError <====="
       raise NoMethodError.new(error_message)
     else
       puts "=====> NoMethodError not raised for method #{method}"
@@ -29,8 +22,16 @@ module NilTracker
     false
   end
 
-  def self.stop_execution(stop)
-    @@stop_execution = stop
+  def stop_execution?
+    nil_tracker.stop_execution
+  end
+
+  def stop_execution(value)
+    nil_tracker.stop_execution = value
+  end
+
+  def self.methods_list
+    NilTracker.instance.methods_list
   end
 
   def to_ary
@@ -60,54 +61,92 @@ module NilTracker
     super(args)
   end
 
+  def permitted?
+    false
+  end
+
   private
 
-  def wolvernil
-    Wolvernil.instance
+  def nil_tracker
+    NilTracker.instance
   end
 end
 
-class Wolvernil
+class NilTracker
   include Singleton
+
+  attr_accessor :stop_execution
 
   def methods_list
     @methods_list ||= {}
   end
 
   def log(method, caller_lines, *args,  &block)
+    error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
+
+    puts error_message
+    puts "=====> Caller: (stacktrace)"
+    puts caller.take(5).join("\n")
+    puts "=====> args: #{args}" if args&.size > 0
+    puts "=====> block: #{block.source}" if block
+
     create_method(method, args, block)
-    methods_list[method] =  {
-      args:, block:, caller_lines:, timestamp: Time.now
-    }
+    store_method_info(method, caller_lines, args, block)
   end
 
   def create_method(method, *args, &block)
-    NilTracker.define_method(method) do |*args, &block|
+    return if methods_list[method]
+
+    Wolvernil.define_method(method) do |*args, &block|
       p "---> Calling a method #{method} in the nil class, this has been recorded"
     end
   end
+
+  def store_method_info(method, caller_lines, *args,  &block)
+    new_block = args[1].source if args[1]&.class == Proc
+    methods_list[method] =  {
+      args:, block: new_block, caller_lines:, timestamp: Time.now
+    }
+  end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########  CODE FOR DEMO ################
 
 class RubyConf
   def break_nil
-    NilTracker.stop_execution(true)
-    nil.extend(NilTracker)
+
+    nil.extend(Wolvernil)
+    nil.stop_execution(true)
 
     data = nil
     data.help1  rescue "Oops exception raised, don't wake up the team log"
 
-    #  data.help2("help is on the way", value: true)
-
-    # data.help3 { puts "Help is on the way" }
     5.times.each do |variable|
       data.help1
     end
-    # data.help2("ops")
 
-    p "Missing methods: "
-    p Wolvernil.instance.methods_list
+    nil.stop_execution(false)
+    data.help2("help is on the way", value: true)
+    data.help3 { puts "Help is on the way" }
+
+    ap "Missing methods: "
+    ap Wolvernil.methods_list
   end
 end
 
-
 RubyConf.new.break_nil
+
+

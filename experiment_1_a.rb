@@ -1,4 +1,4 @@
-require "pry"
+require "pry-nav"
 
 class NilClass
   def method_missing(method, *args, &block)
@@ -9,7 +9,7 @@ class NilClass
     puts "=====> args: #{args}" if args&.size > 0
     puts "=====> block: #{block.source}" if block
 
-    puts "=====> NoMethodError was not raised"
+    puts "=====> NoMethodError ignored"
     puts "================================\n\n"
   end
 
@@ -30,6 +30,35 @@ class NilClass
   end
 end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########  CODE FOR DEMO ################
+
+
 number = 12
 data = nil
 
@@ -38,5 +67,8 @@ data.help2("help is on the way", value: true)
 data.help3 { puts "Help is on the way" }
 
 # undefined method `help' for nil (NoMethodError)
-# binding.pry
+binding.pry
+
+
+
 

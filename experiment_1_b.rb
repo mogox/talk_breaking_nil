@@ -1,4 +1,4 @@
-require "pry"
+require "pry-nav"
 
 class NilClass
   attr_accessor :stop_execution
@@ -11,7 +11,7 @@ class NilClass
     puts "=====> args: #{args}" if args&.size > 0
     puts "=====> block: #{block.source}" if block
 
-    puts "=====> NoMethodError was not raised"
+    puts "=====> NoMethodError ignored"
     puts "================================\n\n"
   end
 
@@ -32,9 +32,27 @@ class NilClass
   end
 end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########  CODE FOR DEMO ################
+
 number = 12
 data = nil
 
+#### THIS ####
 data.stop_execution = true
 
 data.help
@@ -45,4 +63,7 @@ data.help3 { puts "Help is on the way" }
 
 # undefined method `help' for nil (NoMethodError)
 # binding.pry
+
+
+
 
