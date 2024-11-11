@@ -9,7 +9,8 @@ module Wolvernil
     nil_tracker.log(method, caller.take(5).join("\n"), args, block)
 
     if stop_execution?
-      puts "====> Raising NoMethodError <====="
+      error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
+      puts "====> Raising NoMethodError <=====\n\n"
       raise NoMethodError.new(error_message)
     else
       puts "=====> NoMethodError not raised for method #{method}"
@@ -124,6 +125,7 @@ end
 
 
 ########  CODE FOR DEMO ################
+# require 'wolvernil'
 
 class RubyConf
   def break_nil
@@ -142,8 +144,8 @@ class RubyConf
     data.help2("help is on the way", value: true)
     data.help3 { puts "Help is on the way" }
 
-    ap "Missing methods: "
-    ap Wolvernil.methods_list
+    # ap "Missing methods: "
+    # ap Wolvernil.methods_list
   end
 end
 

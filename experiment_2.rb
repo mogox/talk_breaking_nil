@@ -17,7 +17,7 @@ module NilTracker
     puts "=====> block: #{block.source}" if block
 
     if stop_execution?
-      puts "====> Raising NoMethodError <====="
+      puts "====> Raising NoMethodError <=====\n\n"
       raise NoMethodError.new(error_message)
     else
       puts "=====> NoMethodError ignored"
@@ -53,10 +53,6 @@ module NilTracker
   def to_hash
     {}
   end
-
-  def to_str
-    ""
-  end
 end
 
 
@@ -78,18 +74,17 @@ end
 ########  CODE FOR DEMO ################
 
 nil.extend(NilTracker)
-#  nil.stop_execution(true)
+nil.stop_execution(true)
 
 data = nil
-data.help1 # rescue "Exception"
+data.help1 rescue "Exception"
 
-# nil.stop_execution(false)
+nil.stop_execution(false)
 
-data.help2("help is on the way", value: true)
+data.help2("parameters go here", value: true)
 
-data.help3 { puts "Help is on the way" }
+data.help3 { puts "This is a block! and help is on the way" }
 
-# binding.pry
 
 
 
