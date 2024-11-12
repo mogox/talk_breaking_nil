@@ -8,7 +8,7 @@ module Wolvernil
 
     nil_tracker.log(method, caller.take(5).join("\n"), args, block)
 
-    if stop_execution?
+    if raise_exception?
       error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
       puts "====> Raising NoMethodError <=====\n\n"
       raise NoMethodError.new(error_message)
@@ -23,12 +23,12 @@ module Wolvernil
     false
   end
 
-  def stop_execution?
-    nil_tracker.stop_execution
+  def raise_exception?
+    nil_tracker.raise_exception
   end
 
-  def stop_execution(value)
-    nil_tracker.stop_execution = value
+  def raise_exception(value)
+    nil_tracker.raise_exception = value
   end
 
   def self.methods_list
@@ -76,14 +76,14 @@ end
 class NilTracker
   include Singleton
 
-  attr_accessor :stop_execution
+  attr_accessor :raise_exception
 
   def methods_list
     @methods_list ||= {}
   end
 
   def log(method, caller_lines, *args,  &block)
-    error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
+    error_message = "=====> Trying to call method **#{method}** in `nil` (NoMethodError)"
 
     puts error_message
     puts "=====> Caller: (stacktrace)"
@@ -99,7 +99,7 @@ class NilTracker
     return if methods_list[method]
 
     Wolvernil.define_method(method) do |*args, &block|
-      p "---> Calling a method #{method} in the nil class, this has been recorded"
+      p "---> Calling a method #{method} in the nil class, this has been logged"
     end
   end
 
@@ -131,7 +131,7 @@ class RubyConf
   def break_nil
 
     nil.extend(Wolvernil)
-    nil.stop_execution(true)
+    nil.raise_exception(true)
 
     data = nil
     data.help1  rescue "Oops exception raised, don't wake up the team log"
@@ -140,7 +140,9 @@ class RubyConf
       data.help1
     end
 
-    nil.stop_execution(false)
+    puts "Done testing help1 \n\n\n"
+
+    nil.raise_exception(false)
     data.help2("help is on the way", value: true)
     data.help3 { puts "Help is on the way" }
 

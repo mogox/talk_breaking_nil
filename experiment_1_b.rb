@@ -1,7 +1,7 @@
 require "pry-nav"
 
 class NilClass
-  attr_accessor :stop_execution
+  attr_accessor :raise_exception
 
   def method_missing(method, *args, &block)
     error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
@@ -53,7 +53,7 @@ number = 12
 data = nil
 
 #### THIS ####
-data.stop_execution = true
+data.raise_exception = true
 
 data.help
 data.help2("help is on the way", value: true)
@@ -61,7 +61,6 @@ data.help3 { puts "Help is on the way" }
 
 
 
-# undefined method `help' for nil (NoMethodError)
 # binding.pry
 
 

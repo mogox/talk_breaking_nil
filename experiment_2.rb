@@ -4,7 +4,7 @@ require "singleton"
 class TrackerHelper
   include Singleton
 
-  attr_accessor :stop_execution
+  attr_accessor :raise_exception
 end
 
 module NilTracker
@@ -16,7 +16,7 @@ module NilTracker
     puts "=====> args: #{args}" if args&.size > 0
     puts "=====> block: #{block.source}" if block
 
-    if stop_execution?
+    if raise_exception?
       puts "====> Raising NoMethodError <=====\n\n"
       raise NoMethodError.new(error_message)
     else
@@ -30,16 +30,16 @@ module NilTracker
     false
   end
 
-  def stop_execution?
-    tracker_helper.stop_execution
+  def raise_exception?
+    tracker_helper.raise_exception
   end
 
   def tracker_helper
     TrackerHelper.instance
   end
 
-  def stop_execution(value)
-    tracker_helper.stop_execution = value
+  def raise_exception(value)
+    tracker_helper.raise_exception = value
   end
 
   def to_ary
@@ -74,12 +74,12 @@ end
 ########  CODE FOR DEMO ################
 
 nil.extend(NilTracker)
-nil.stop_execution(true)
+nil.raise_exception(true)
 
 data = nil
 data.help1 rescue "Exception"
 
-nil.stop_execution(false)
+nil.raise_exception(false)
 
 data.help2("parameters go here", value: true)
 
