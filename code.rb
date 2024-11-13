@@ -53,3 +53,11 @@ Wolvernil#methods:
 NilClass#methods:
   &    =~  inspect  pretty_print_cycle  to_a  to_f  to_i  to_s
   ===  ^   nil?     rationalize         to_c  to_h  to_r  |
+
+
+ Timeout.timeout(timeout, Timeout::Error, "eeeeeeeror") do
+
+  sleep 10
+  put "Done"
+
+end

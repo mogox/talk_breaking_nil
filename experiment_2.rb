@@ -79,12 +79,12 @@ nil.raise_exception(true)
 data = nil
 data.help1 rescue "Exception"
 
-nil.raise_exception(false)
+nil.raise_exception(true)
 
 data.help2("parameters go here", value: true)
 
 data.help3 { puts "This is a block! and help is on the way" }
 
-
+binding.pry
 
 

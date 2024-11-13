@@ -6,13 +6,17 @@ class NilClass
   def method_missing(method, *args, &block)
     error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
 
-    puts error_message
-    puts caller.take(5).join("\n")
-    puts "=====> args: #{args}" if args&.size > 0
-    puts "=====> block: #{block.source}" if block
+    if @raise_exception
+      NoMethodError.new(error_message)
+    else
+      puts error_message
+      puts caller.take(5).join("\n")
+      puts "=====> args: #{args}" if args&.size > 0
+      puts "=====> block: #{block.source}" if block
 
-    puts "=====> NoMethodError ignored"
-    puts "================================\n\n"
+      puts "=====> NoMethodError ignored"
+      puts "================================\n\n"
+    end
   end
 
   def respond_to_missing?(method_name, include_private = false)
@@ -49,7 +53,6 @@ end
 
 ########  CODE FOR DEMO ################
 
-number = 12
 data = nil
 
 #### THIS ####
