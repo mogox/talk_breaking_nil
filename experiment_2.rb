@@ -77,14 +77,13 @@ nil.extend(NilTracker)
 nil.raise_exception(true)
 
 data = nil
-data.help1 rescue "Exception"
+data.help1 # rescue puts "Rescue, please ignore Exception\n\n"
 
-nil.raise_exception(true)
+nil.raise_exception(false)
 
 data.help2("parameters go here", value: true)
 
 data.help3 { puts "This is a block! and help is on the way" }
 
-binding.pry
 
 

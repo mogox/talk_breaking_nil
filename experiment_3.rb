@@ -128,29 +128,47 @@ end
 # require 'wolvernil'
 
 class RubyConf
-  def break_nil
-
-    nil.extend(Wolvernil)
-    nil.raise_exception(true)
-
-    data = nil
-    data.help1  rescue "Oops exception raised, don't wake up the team log"
-
-    5.times.each do |variable|
-      data.help1
-    end
-
+  def break_nil_more
     puts "Done testing help1 \n\n\n"
 
     nil.raise_exception(false)
     data.help2("help is on the way", value: true)
     data.help3 { puts "Help is on the way" }
+  end
 
-    # ap "Missing methods: "
-    # ap Wolvernil.methods_list
+  def data
+    nil
+  end
+
+
+
+
+
+
+
+
+
+
+
+  def break_nil
+    # nil setup
+    nil.extend(Wolvernil)
+    nil.raise_exception(true)
+
+    data.help1  rescue "Oops exception raised, don't wake up the team log"
+
+    5.times.each do |variable|
+      data.help1
+    end
   end
 end
 
-RubyConf.new.break_nil
+conf = RubyConf.new
+conf.break_nil
+
+# conf.break_nil_more
+
+
+
 
 
