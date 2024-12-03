@@ -77,7 +77,7 @@ nil.extend(NilTracker)
 nil.raise_exception(true)
 
 data = nil
-data.help1 # rescue puts "Rescue, please ignore Exception\n\n"
+data.help1 rescue puts "Rescue, please ignore Exception\n\n"
 
 nil.raise_exception(false)
 

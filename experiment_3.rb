@@ -155,10 +155,10 @@ class RubyConf
     nil.extend(Wolvernil)
     nil.raise_exception(true)
 
-    data.help1  rescue "Oops exception raised, don't wake up the team log"
+    data.help1(value: true) rescue "Oops exception raised, don't wake up the team log"
 
     5.times.each do |variable|
-      data.help1
+      data.help1(value: true)
     end
   end
 end
