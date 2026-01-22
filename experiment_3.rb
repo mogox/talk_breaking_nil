@@ -10,11 +10,11 @@ module Wolvernil
 
     if raise_exception?
       error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
-      puts "====> Raising NoMethodError <=====\n\n"
+      ap "====> Raising NoMethodError <=====\n\n"
       raise NoMethodError.new(error_message)
     else
-      puts "=====> NoMethodError not raised for method #{method}"
-      puts "================================\n\n"
+      ap "=====> NoMethodError not raised for method #{method}"
+      ap "================================\n\n"
     end
   end
 
@@ -85,11 +85,11 @@ class NilTracker
   def log(method, caller_lines, *args,  &block)
     error_message = "=====> Trying to call method **#{method}** in `nil` (NoMethodError)"
 
-    puts error_message
-    puts "=====> Caller: (stacktrace)"
-    puts caller.take(5).join("\n")
-    puts "=====> args: #{args}" if args&.size > 0
-    puts "=====> block: #{block.source}" if block
+    ap error_message
+    ap "=====> Caller: (stacktrace)"
+    ap caller.take(5).join("\n")
+    ap "=====> args: #{args}" if args&.size > 0
+    ap "=====> block: #{block.source}" if block
 
     create_method(method, args, block)
     store_method_info(method, caller_lines, args, block)
@@ -99,7 +99,7 @@ class NilTracker
     return if methods_list[method]
 
     Wolvernil.define_method(method) do |*args, &block|
-      p "---> Calling a method #{method} in the nil class, this has been logged"
+      ap "---> Calling a method #{method} in the nil class, this has been logged"
     end
   end
 
@@ -127,7 +127,7 @@ end
 ########  CODE FOR DEMO ################
 # require 'wolvernil'
 
-class RubyConf
+class SFRubyMeetup
   def break_nil_more
     puts "Done testing help1 \n\n\n"
 
@@ -154,17 +154,19 @@ class RubyConf
     # nil setup
     nil.extend(Wolvernil)
     nil.raise_exception(true)
+    binding.pry
 
     data.help1(value: true) rescue "Oops exception raised, don't wake up the team log"
 
-    5.times.each do |variable|
+    3.times.each do |variable|
+      binding.pry
       data.help1(value: true)
     end
   end
 end
 
-conf = RubyConf.new
-conf.break_nil
+experiment_3 = SFRubyMeetup.new
+experiment_3.break_nil
 
 # conf.break_nil_more
 
