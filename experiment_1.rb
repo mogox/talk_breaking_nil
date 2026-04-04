@@ -1,16 +1,23 @@
 require "pry-nav"
+require "awesome_print"
 
 class NilClass
   def method_missing(method, *args, &block)
     error_message = "=====> Trying to call method `#{method}` nil (NoMethodError)"
 
-    puts error_message
-    puts caller.take(5).join("\n")
-    puts "=====> args: #{args}" if args&.size > 0
-    puts "=====> block: #{block.source}" if block
+    ap error_message
+    ap caller.take(5).join("\n")
+    if args&.size > 0
+      ap "=====> args:"
+      ap args
+    end
+    if block
+      ap "=====> block:"
+      ap block.source
+    end
 
-    puts "=====> NoMethodError ignored"
-    puts "================================\n\n"
+    ap "=====> NoMethodError ignored"
+    ap "================================\n\n"
   end
 
   def respond_to_missing?(method_name, include_private = false)
@@ -64,7 +71,7 @@ data = nil
 
 data.help
 data.help2("help is on the way", value: true)
-data.help3 { puts "Help is on the way" }
+data.help3 { ap "Help is on the way" }
 
 # binding.pry
 

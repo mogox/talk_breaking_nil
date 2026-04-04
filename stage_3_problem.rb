@@ -1,6 +1,6 @@
 
 # Inside a view
-%span= @tags[:level][:label]
+span = @tags[:level][:label]
 
 # Inside a controller
 @tags = props[:tags]
@@ -21,16 +21,16 @@ def level_icon(level)
   end
 end
 
-module NilTracker
-  def method_missing(method, *args, &block)
-  	if @recoverable_methods.include?(method)
-  		setup_method(method, params: args)
-  	else
+# module NilTracker
+#   def method_missing(method, *args, &block)
+#   	if @recoverable_methods.include?(method)
+#   		setup_method(method, params: args)
+#   	else
 
-  	end
-  end
+#   	end
+#   end
 
-  def setup_method(method, result, params: nil)
-  	define_method(method.to_sym, *params) { result }
-  end
-end
+#   def setup_method(method, result, params: nil)
+#   	define_method(method.to_sym, *params) { result }
+#   end
+# end
